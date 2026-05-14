@@ -40,7 +40,13 @@ export async function runDaemon(config: AppConfig): Promise<DaemonHandle> {
     managedPrefix: config.calendars.managedPrefix,
   })
 
-  const reconciler = new Reconciler({ gcal, tasks: tasksRepo, calendarManager })
+  const reconciler = new Reconciler({
+    gcal,
+    tasks: tasksRepo,
+    calendarManager,
+    reminderLabel: config.todoist.reminderLabel,
+    noCalendarLabel: config.todoist.noCalendarLabel,
+  })
 
   log.info('Daemon starting', {
     pollIntervalMs: config.daemon.pollIntervalMs,

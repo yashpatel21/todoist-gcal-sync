@@ -6,6 +6,10 @@ export type LogLevel = 'debug' | 'info' | 'warn' | 'error'
 export type AppConfig = {
   todoist: {
     apiToken: string
+    /** Todoist label that routes to the Reminders calendar. */
+    reminderLabel: string
+    /** Todoist label that excludes the task from all Google calendars. */
+    noCalendarLabel: string
   }
   google: {
     clientId: string
@@ -79,7 +83,11 @@ export function loadConfig(): AppConfig {
   const logLevel = parseLogLevel(optionalEnv('LOG_LEVEL', 'info'))
 
   return {
-    todoist: { apiToken: todoistApiToken },
+    todoist: {
+      apiToken: todoistApiToken,
+      reminderLabel: optionalEnv('TODOIST_REMINDER_LABEL', 'reminder'),
+      noCalendarLabel: optionalEnv('TODOIST_NO_CALENDAR_LABEL', 'no-calendar'),
+    },
     google: {
       clientId: googleClientId,
       clientSecret: googleClientSecret,

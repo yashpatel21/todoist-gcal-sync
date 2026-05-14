@@ -14,7 +14,7 @@ import {
 } from '../db/calendars.js'
 import type { TaskMappingsRepo } from '../db/tasks.js'
 import type { TodoistSnapshot } from '../todoist/types.js'
-import type { RouteTarget } from './routing.js'
+import type { RoutedCalendarTarget } from './routing.js'
 import { log } from '../logger.js'
 
 export type CalendarManagerDeps = {
@@ -82,7 +82,7 @@ export class CalendarManager {
    * lazily for `project` targets that do not yet have one. The mapping is
    * persisted immediately after a successful create.
    */
-  async resolveCalendarId(target: RouteTarget): Promise<string> {
+  async resolveCalendarId(target: RoutedCalendarTarget): Promise<string> {
     if (target.kind === 'reminders' || target.kind === 'tasks') {
       const mapping = this.deps.calendars.findSpecial(target.kind)
       if (!mapping) {

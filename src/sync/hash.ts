@@ -15,7 +15,7 @@ export function computeContentHash(task: TodoistTask, target: RouteTarget): stri
       : { kind: 'datetime', value: task.due.datetime, tz: task.due.timezone }
 
   const canonical = JSON.stringify({
-    v: 2,
+    v: 3,
     title: task.content,
     description: task.description,
     due,
@@ -30,6 +30,8 @@ export function computeContentHash(task: TodoistTask, target: RouteTarget): stri
 
 function targetKey(t: RouteTarget): string {
   switch (t.kind) {
+    case 'none':
+      return 'none'
     case 'reminders':
       return 'reminders'
     case 'tasks':

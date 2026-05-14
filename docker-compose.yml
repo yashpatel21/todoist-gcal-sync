@@ -19,9 +19,14 @@ services:
       DATABASE_PATH: /app/data/sync.db
       LOG_LEVEL: info
 
+      # Google Calendar prefix and names (change as needed).
       MANAGED_CALENDAR_PREFIX: "Todoist:"
       SPECIAL_CALENDAR_REMINDERS: Reminders
       SPECIAL_CALENDAR_TASKS: Tasks
+
+      # Todoist label names (match your Todoist labels exactly).
+      TODOIST_REMINDER_LABEL: reminder
+      TODOIST_NO_CALENDAR_LABEL: no-calendar
 
     volumes:
       - /data/todoist-gcal-daemon/:/app/data

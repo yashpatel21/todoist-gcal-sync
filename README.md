@@ -6,13 +6,14 @@ Headless **Todoist → Google Calendar** sync service. Todoist is the only sourc
 
 - Polls Todoist every 60 seconds and syncs tasks with a due date (timed or all-day). Tasks without a due date are ignored.
 - Creates and maintains Google Calendars prefixed with `Todoist:` so they stand out:
-  - Tasks with the `reminder` label → **Reminders**
-  - Tasks in the Inbox or with no project → **Tasks**
-  - Everything else → calendar named after the **top-level** Todoist project (subprojects roll up)
-- **Lazy project calendars**: created the first time a scheduled task routes there.
-- **Project deletion**: deleting a Todoist project removes its Google calendar. Emptying a project does not.
+  - Tasks with the **no-calendar** label (name configurable, default `no-calendar`) are never synced. Any existing Google Calendar event for that task is removed.
+  - Else tasks with the **reminder** label (name configurable, default `reminder`) → **Reminders**
+  - Else tasks in the Inbox or with no project → **Tasks**
+  - Else → calendar named after the **top-level** Todoist project (subprojects roll up)
+- **Lazy project calendars**: created the first time a scheduled task routes there to prevent calendar clutter.
+- **Project deletion**: deleting/archiving a Todoist project removes its Google calendar. Emptying a project does not.
 - Each Google event links back to Todoist (`https://app.todoist.com/app/task/<id>`).
-- Crash-safe mapping in SQLite + `extendedProperties.private.todoist_task_id` on every event.
+- Crash-safe mapping in SQLite
 
 ## Getting started
 
@@ -70,6 +71,8 @@ Non-secrets are in [`docker-compose.yml`](docker-compose.yml):
 | `MANAGED_CALENDAR_PREFIX`    | `Todoist:`                             | Prefix for managed calendars; empty disables.  |
 | `SPECIAL_CALENDAR_REMINDERS` | `Reminders`                            | Reminder calendar name (before prefix).        |
 | `SPECIAL_CALENDAR_TASKS`     | `Tasks`                                | Inbox/catch-all calendar name (before prefix). |
+| `TODOIST_REMINDER_LABEL`     | `reminder`                             | Todoist label that routes to Reminders (exact match). |
+| `TODOIST_NO_CALENDAR_LABEL`  | `no-calendar`                          | Todoist label that excludes the task from all calendars (exact match; wins over reminder). |
 | `LOG_LEVEL`                  | `info`                                 | `debug` / `info` / `warn` / `error`.           |
 
 ## Data persistence

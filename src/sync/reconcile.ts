@@ -11,7 +11,7 @@ import {
 import type { TaskMappingsRepo } from '../db/tasks.js'
 import type { TodoistSnapshot, TodoistTask } from '../todoist/types.js'
 import type { CalendarManager } from './calendarManager.js'
-import { route } from './routing.js'
+import { route, type RoutedCalendarTarget } from './routing.js'
 import { computeContentHash } from './hash.js'
 import { log } from '../logger.js'
 
@@ -19,6 +19,8 @@ export type ReconcileDeps = {
   gcal: GCalClient
   tasks: TaskMappingsRepo
   calendarManager: CalendarManager
+  reminderLabel: string
+  noCalendarLabel: string
 }
 
 export type ReconcileStats = {
@@ -27,6 +29,7 @@ export type ReconcileStats = {
   rerouted: number
   skipped: number
   deleted: number
+  noCalendar: number
   errors: number
 }
 
@@ -72,6 +75,7 @@ export class Reconciler {
       rerouted: 0,
       skipped: 0,
       deleted: 0,
+      noCalendar: 0,
       errors: 0,
     }
 
@@ -100,8 +104,17 @@ export class Reconciler {
     const target = route(task, {
       projectsById: snapshot.projectsById,
       inboxProjectId: snapshot.inboxProjectId,
+      reminderLabel: this.deps.reminderLabel,
+      noCalendarLabel: this.deps.noCalendarLabel,
     })
-    const targetCalendarId = await this.deps.calendarManager.resolveCalendarId(target)
+
+    if (target.kind === 'none') {
+      await this.removeTaskFromGoogleCalendar(task.id, stats)
+      return
+    }
+
+    const calendarTarget: RoutedCalendarTarget = target
+    const targetCalendarId = await this.deps.calendarManager.resolveCalendarId(calendarTarget)
     const payload = buildEventPayload(task)
     const hash = computeContentHash(task, target)
     const existing = this.deps.tasks.findById(task.id)
@@ -184,6 +197,29 @@ export class Reconciler {
     })
     await deleteEvent(this.deps.gcal, existing.googleCalendarId, existing.googleEventId)
     stats.rerouted += 1
+  }
+
+  /**
+   * Strips a task from Google Calendar: active DB mapping, then any remaining
+   * managed events (duplicates/orphans) found by extended property scan.
+   */
+  private async removeTaskFromGoogleCalendar(
+    todoistTaskId: string,
+    stats: ReconcileStats,
+  ): Promise<void> {
+    const existing = this.deps.tasks.findById(todoistTaskId)
+    if (existing?.status === 'active') {
+      await deleteEvent(this.deps.gcal, existing.googleCalendarId, existing.googleEventId)
+      this.deps.tasks.softDelete(todoistTaskId)
+      stats.noCalendar += 1
+    }
+    const calendarIds = this.deps.calendarManager.listActiveCalendarIds()
+    for (let i = 0; i < 10; i++) {
+      const found = await findManagedEventByTodoistId(this.deps.gcal, calendarIds, todoistTaskId)
+      if (!found?.event?.id) break
+      await deleteEvent(this.deps.gcal, found.calendarId, found.event.id)
+      stats.noCalendar += 1
+    }
   }
 
   /**
