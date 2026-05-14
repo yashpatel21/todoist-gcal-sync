@@ -1,7 +1,7 @@
 services:
-  daemon:
-    image: yashpatel21/todoist-gcal-daemon:latest
-    container_name: todoist-gcal-daemon
+  todoist-gcal-sync:
+    image: yashpatel21/todoist-gcal-sync:latest
+    container_name: todoist-gcal-sync
     restart: unless-stopped
 
     environment:
@@ -29,7 +29,7 @@ services:
       TODOIST_NO_CALENDAR_LABEL: no-calendar
 
     volumes:
-      - /data/todoist-gcal-daemon/:/app/data
+      - /data/todoist-gcal-sync/:/app/data
 
     # Published only for the initial OAuth bootstrap (first run with no
     # GOOGLE_REFRESH_TOKEN). After the token is captured and pasted into

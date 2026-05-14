@@ -1,4 +1,4 @@
-# todoist-gcal-daemon
+# todoist-gcal-sync
 
 Headless **Todoist → Google Calendar** sync service. Todoist is the only source of truth; Google Calendar is a read-only mirror for viewing tasks in Apple Calendar or any Google Calendar client.
 
@@ -77,9 +77,9 @@ Non-secrets are in [`docker-compose.yml`](docker-compose.yml):
 
 ## Data persistence
 
-The Compose file bind-mounts `/data/todoist-gcal-daemon/` on the host to `/app/data` in the container. Change the host path in compose if you want a different location. On the Docker host, create the directory and make it writable by uid 1000 (`node` in the image):
+The Compose file bind-mounts `/data/todoist-gcal-sync/` on the host to `/app/data` in the container. Change the host path in compose if you want a different location. On the Docker host, create the directory and make it writable by uid 1000 (`node` in the image):
 
 ```bash
-sudo mkdir -p /data/todoist-gcal-daemon
-sudo chown -R 1000:1000 /data/todoist-gcal-daemon
+sudo mkdir -p /data/todoist-gcal-sync
+sudo chown -R 1000:1000 /data/todoist-gcal-sync
 ```

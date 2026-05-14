@@ -1,5 +1,5 @@
 {
-  "name": "todoist-gcal-daemon",
+  "name": "todoist-gcal-sync",
   "version": "0.2.0",
   "private": true,
   "description": "One-way sync daemon: Todoist -> Google Calendar.",
@@ -14,8 +14,8 @@
     "build": "tsc -p tsconfig.json",
     "start:dist": "node dist/index.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "docker:build": "docker buildx build -t yashpatel21/todoist-gcal-daemon:latest --load .",
-    "docker:publish": "docker buildx inspect multiarch >/dev/null 2>&1 || docker buildx create --name multiarch --driver docker-container && docker buildx inspect multiarch --bootstrap && docker buildx build --builder multiarch --platform linux/amd64,linux/arm64 -t yashpatel21/todoist-gcal-daemon:latest --push ."
+    "docker:build": "docker buildx build -t yashpatel21/todoist-gcal-sync:latest --load .",
+    "docker:publish": "docker buildx inspect multiarch >/dev/null 2>&1 || docker buildx create --name multiarch --driver docker-container && docker buildx inspect multiarch --bootstrap && docker buildx build --builder multiarch --platform linux/amd64,linux/arm64 -t yashpatel21/todoist-gcal-sync:latest --push ."
   },
   "dependencies": {
     "@doist/todoist-sdk": "^10.1.4",
