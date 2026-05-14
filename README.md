@@ -1,6 +1,6 @@
 # todoist-gcal-sync
 
-Headless **Todoist → Google Calendar** sync service. Todoist is the only source of truth; Google Calendar is a read-only mirror for viewing tasks in Apple Calendar or any Google Calendar client.
+Headless **Todoist → Google Calendar** sync service. Todoist is the only source of truth. Google Calendar is a read-only mirror for viewing tasks.
 
 ## What it does
 
